@@ -1,8 +1,7 @@
 ---
-title: "Welcome to My Blog"
+title: "COVID-19"
 description: |
-  Welcome to our new blog, My Blog. We hope you enjoy 
-  reading what we have to say!
+  The blog aims to exhibit some brief insights about Peru's COVID-19 situation.
 author:
   - name: Prachi Jaiswal
 date: 08-31-2021
