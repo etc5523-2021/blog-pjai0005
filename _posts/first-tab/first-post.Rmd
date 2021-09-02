@@ -1,13 +1,13 @@
 ---
-title: "Vaccination"
+title: "Economic-Pandemic"
 description: |
-  Understanding about COVID-19 vaccination in Peru.
+  COVID-19 crisis in Peru.
 author:
   - name: Prachi Jaiswal 
 date: "`r Sys.Date()`"
 output:
   distill::distill_article:
-    self_contained: false 
+    self_contained: false
 ---
 
 ```{r setup, include=FALSE}

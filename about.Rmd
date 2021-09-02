@@ -1,9 +1,18 @@
 ---
-title: "About this blog"
-description: |
-  Some additional details about the blog
+title: "About me"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
 ```
+
+
+# Hey there!
+
+## I am Prachi, a student at Monash University. 
+
+I am currently pursuing a Master's degree in Business Analytics (2021 to 2023), and I have graduated in Engineering of Information Technology from India. I am very much excited to share my thoughts and ideas with you all with the help of blogs. I hope you find my blogs interesting and informative.
+
+
+You can check out my [GitHub](https://github.com/pjai0005) page for more exciting analysis.

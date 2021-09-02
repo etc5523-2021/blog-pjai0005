@@ -1,12 +1,15 @@
 name: "distill"
-title: "My Blog"
+title: "COVID-19"
 description: |
-  My Blog
+  The blog aims to exhibit some brief insights into Peru's COVID-19 situation.
 output_dir: "docs"
 navbar:
   right:
-    - text: "Home"
+    - text: "Home" 
       href: index.html
     - text: "About"
       href: about.html
+    - text: "Source"
+      href: https://ourworldindata.org/coronavirus/country/peru
 output: distill::distill_article
+

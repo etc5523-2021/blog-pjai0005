@@ -2,24 +2,17 @@
   "articles": [
     {
       "path": "about.html",
-      "title": "About this blog",
-      "description": "Some additional details about the blog",
+      "title": "About me",
       "author": [],
-      "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-08-31T10:45:52+05:45"
+      "contents": "\r\nHey there!\r\nI am Prachi, a student at Monash University.\r\nI am currently pursuing a Master’s degree in Business Analytics (2021 to 2023), and I have graduated in Engineering of Information Technology from India. I am very much excited to share my thoughts and ideas with you all with the help of blogs. I hope you find my blogs interesting and informative.\r\nYou can check out my GitHub page for more exciting analysis.\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-09-03T01:34:17+05:45"
     },
     {
       "path": "index.html",
-      "title": "Peru",
-      "author": [
-        {
-          "name": "Prachi Jaiswal",
-          "url": {}
-        }
-      ],
-      "date": "08-31-2021",
-      "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-08-31T10:45:53+05:45"
+      "title": "Impacts",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n\r\n\r\n\r\nh1 {\r\n  color: black;\r\n  padding: 30px;\r\n}\r\n\r\np {\r\n  font-family: verdana;\r\n}\r\n\r\n\r\nCOVID-19 in Peru \r\n\r\nIntroduction\r\n\r\n\r\nInto here\r\n\r\n\r\nData Description\r\n\r\n\r\nDD here\r\n\r\n\r\nData Story\r\n\r\n\r\nDS here\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-09-03T02:02:22+05:45"
     }
   ],
   "collections": ["posts/posts.json"]
