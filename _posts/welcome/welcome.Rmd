@@ -2,8 +2,6 @@
 title: "Vaccination"
 description: |
   Understanding about COVID-19 vaccination in Peru.
-author:
-  - name: Prachi Jaiswal 
 date: "`r Sys.Date()`"
 output:
   distill::distill_article:
@@ -42,3 +40,23 @@ peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, ne
 ```
 
 
+```{r}
+
+peru %>%
+  group_by(month) %>% filter(year == 2021) %>%
+  mutate(month = month(date, label = TRUE)) %>%
+  summarise("Vaccination" = sum(new_vaccinations, na.rm = TRUE),
+            "Timeline" = spk_chr(new_vaccinations, type ="line"),
+            "Partially Vaccinated" = sum(people_vaccinated, na.rm = TRUE),
+            "Fully Vaccinated" = sum(people_fully_vaccinated, na.rm = TRUE),
+            "Distribution" = spk_chr(people_fully_vaccinated, type ="box"))%>%
+  rename(Month = month)%>%
+  datatable(escape = FALSE, 
+            ,caption = htmltools::tags$caption( style = 'caption-side: top; 
+                                                text-align: center;  color:black; font-size:120% ;',
+                                                'Vaccination Rate 2021'),
+            options = c (list(pageLength = 10 ))) %>%
+  spk_add_deps()
+
+
+```

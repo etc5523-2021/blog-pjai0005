@@ -2,8 +2,6 @@
 title: "Economic-Pandemic"
 description: |
   COVID-19 crisis in Peru.
-author:
-  - name: Prachi Jaiswal 
 date: "`r Sys.Date()`"
 output:
   distill::distill_article:
@@ -42,3 +40,23 @@ peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, ne
 ```
 
 
+```{r}
+tab1<-  peru %>%
+  mutate(quaters = quarter(date, with_year = TRUE)) %>% 
+  group_by(quaters) %>%
+  summarise("Tests" = sum(new_tests, na.rm = TRUE),
+            "Positive Cases" = sum(new_cases, na.rm = TRUE),
+            "Deaths" = sum(new_deaths, na.rm = TRUE)) %>%
+  pivot_longer(cols = -quaters,
+               names_to = "Variables",
+               values_to = "value")%>%
+  pivot_wider(names_from = Variables,
+              values_from = value) %>%
+  rename(Quaters = quaters)
+
+   tab1 %>% 
+  select(Quaters, Tests, 'Positive Cases', Deaths) %>% 
+  as.data.frame() %>%  
+  formattable(list(area(col = 4) ~ color_tile( "#3CB371", "#CD5C5C"))) #Higher value and Lower value
+
+```

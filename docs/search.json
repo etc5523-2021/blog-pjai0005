@@ -11,8 +11,8 @@
       "path": "index.html",
       "title": "Impacts",
       "author": [],
-      "contents": "\r\n\r\n\r\n\r\n\r\n\r\n\r\nh1 {\r\n  color: black;\r\n  padding: 30px;\r\n}\r\n\r\np {\r\n  font-family: verdana;\r\n}\r\n\r\n\r\nCOVID-19 in Peru \r\n\r\nIntroduction\r\n\r\n\r\nInto here\r\n\r\n\r\nData Description\r\n\r\n\r\nDD here\r\n\r\n\r\nData Story\r\n\r\n\r\nDS here\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-09-03T02:02:22+05:45"
+      "contents": "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nh1 {\r\n  color: black;\r\n  padding: 15px;\r\n}\r\n\r\n\r\np {\r\n  font-family: verdana;\r\n}\r\n\r\n\r\nCOVID-19 in Peru \r\n\r\n\r\nPublished by: Prachi Jaiswal\r\n\r\n\r\nIntroduction\r\n\r\n\r\nInto here\r\n\r\n\r\nData Description\r\n\r\n\r\nDD here\r\n\r\n\r\nData Story\r\n\r\n\r\nDS here\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-09-03T02:18:37+05:45"
     }
   ],
   "collections": ["posts/posts.json"]
