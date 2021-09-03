@@ -1,5 +1,5 @@
 ---
-title: "Impacts"
+title: "Blogs"
 site: distill::distill_website
 listing: posts 
 ---
@@ -9,57 +9,11 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 ```
 
-```{r libraries}
-# remotes::install_github('htmlwidgets/sparkline')
 
-library(readr)
-library(tidyverse)
-library(ggplot2)
-library(lubridate)
-library(sparkline)
-library(DT)
+## Introduction
 
-data <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv') %>% 
-               filter(location == "Peru")
-```
+### Hi friends. I am Prachi. 
+I am very much excited to share my thoughts and ideas with you all. I hope you guys find my blogs interesting and engaging. 
 
+Stay tuned for more information.!!
 
-<html>
-<head>
-<style>
-
-h1 {
-  color: black;
-  padding: 15px;
-}
-
-
-p {
-  font-family: verdana;
-}
-
-</style>
-</head>
-<body>
-
-
-
-<h1>COVID-19 in Peru
-<!-- <img src="https://jaxsonmaximus.com/wp-content/uploads/2020/09/Screen-Shot-2020-09-23-at-3.25.12-PM.png" alt="https://media.istockphoto.com/videos/peru-flag-with-corona-virus-attack-4k-include-alpha-video-id1217010451?s=640x640" style="float:right;width:142px;height:142px;"> -->
-</h1> 
-
-<h6> Published by: Prachi Jaiswal </h6> <hr>
-
-
-
-<h2>Introduction</h2>
-<p> Into here </p>
-
-<h3>Data Description</h3>
-<p> DD here </p>
-
-<h3>Data Story</h3>
-<p> DS here </p>
-
-</body>
-</html>

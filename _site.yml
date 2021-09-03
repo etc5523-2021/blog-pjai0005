@@ -1,7 +1,5 @@
 name: "distill"
-title: "COVID-19"
-description: |
-  The blog aims to exhibit some brief insights into Peru's COVID-19 situation.
+title: "InfoNest"
 output_dir: "docs"
 navbar:
   right:
@@ -9,7 +7,5 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
-    - text: "Source"
-      href: https://ourworldindata.org/coronavirus/country/peru
 output: distill::distill_article
 

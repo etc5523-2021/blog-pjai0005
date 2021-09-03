@@ -1,11 +1,11 @@
 ---
-title: "Vaccination"
+title: "Peru"
 description: |
-  Understanding about COVID-19 vaccination in Peru.
+  COVID-19 crisis in Peru.
 date: "`r Sys.Date()`"
 output:
   distill::distill_article:
-    self_contained: false 
+    self_contained: false
 ---
 
 ```{r setup, include=FALSE}
@@ -39,6 +39,65 @@ peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, ne
          year = year(date))
 ```
 
+![ ](pics/peru.png)
+
+<html>
+<head>
+<style>
+
+h2 {
+  color: black;
+  padding: 15px;
+}
+
+
+p {
+  font-family: verdana;
+}
+
+</style>
+</head>
+<body>
+
+
+<h2>Introduction</h2>
+<p> Into here </p>
+
+<h3>Data Description</h3>
+<p> DD here </p>
+
+<h3>Data Story</h3>
+<p> DS here </p>
+
+</body>
+</html>
+
+
+## Economic-Pandemic
+```{r}
+tab1<-  peru %>%
+  mutate(quaters = quarter(date, with_year = TRUE)) %>% 
+  group_by(quaters) %>%
+  summarise("Tests" = sum(new_tests, na.rm = TRUE),
+            "Positive Cases" = sum(new_cases, na.rm = TRUE),
+            "Deaths" = sum(new_deaths, na.rm = TRUE)) %>%
+  pivot_longer(cols = -quaters,
+               names_to = "Variables",
+               values_to = "value")%>%
+  pivot_wider(names_from = Variables,
+              values_from = value) %>%
+  rename(Quaters = quaters)
+
+   tab1 %>% 
+  select(Quaters, Tests, 'Positive Cases', Deaths) %>% 
+  as.data.frame() %>%  
+  formattable(list(area(col = 4) ~ color_tile( "#3CB371", "#CD5C5C"))) #Higher value and Lower value
+
+```
+explain 1st table
+
+
+## Vaccination Impacts
 
 ```{r}
 
@@ -60,3 +119,5 @@ peru %>%
 
 
 ```
+
+explain 2nd table
