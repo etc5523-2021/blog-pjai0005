@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```{r libraries}
 # remotes::install_github('htmlwidgets/sparkline')
 
+library(distill)
 library(readr)
 library(tidyverse)
 library(ggplot2)
@@ -39,6 +40,7 @@ peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, ne
          month = month(date),
          year = year(date))
 ```
+
 
 ![ ](pics/peru.png)
 <p style = "font-family: verdana;font-size: 8pt;"> source: pinterest.com </p>
@@ -73,14 +75,7 @@ p {
 <h2 > Introduction </h2> 
 
 <p>    
-  intro
-</p>
-
-
-<h3> Data Description </h3> 
-
-<p>    
-  description
+Peru is one of the worst-hit countries in the world by coronavirus. It ranks in the top 5 most severely affected countries in Latin America. According to [BBC June’21](https://www.bbc.com/news/world-latin-america-53150808), Peru estimated approximately 600 coronavirus deaths per 1M people, which is even higher than Brazil, UK, and the US. 
 </p>
 
 
@@ -88,66 +83,86 @@ p {
 <h3> Data Story </h3>
 
 <p>    
-  story
+The avalanching situation in the country abducted many lives and lead to several lockdowns. Peru’s government imposed a lockdown just after 10 days of the country’s first case, hoping that the pain would soon come to an end. We all know this is not the case. So let us see how Peru has dealt with such a humongous plight due to the pandemic.
 </p> 
 
 
-<h2> Economic-Pandemic </h2>
+
+<h3> Data Description </h3> 
+
+<p>    
+
+The data used in this article is acquired from [Our World in Data](https://ourworldindata.org/coronavirus/country/peru). The data consisted of basic information on coronavirus cases, deaths, vaccinations, and other important aspects for all the countries in the world. It was then filtered with the location and some important columns for a better analysis. 
+
+Some parts of the analysis use terms like quarters for time periods which are usually used for the financial breakdown of a year. A year has 4 quarters: 
+
+<ul>
+  <li>Q1: Jan- Mar</li>
+  <li>Q2: Apr-Jun</li>
+  <li>Q3: Jul- Sep</li>
+  <li>Q4: Oct-Deck</li>
+</ul>
+
+</p>
+
+
+
+
+<h2> The Predicament Pandemic </h2>
+
+<p>
+COVID-19 has contributed an enormous amount of disruption to the global financial status. It has ruptured countries with the most stable economies to countries with developing economies like Peru. The below table breakdowns the country’s financial situation over the quarters. 
+</p>
 ```{r}
-tab1 <-  peru %>%
+ peru %>%
   mutate(quaters = quarter(date, with_year = TRUE)) %>% 
   group_by(quaters) %>%
   summarise("Tests" = sum(new_tests, na.rm = TRUE),
-            "Positive Cases" = sum(new_cases, na.rm = TRUE),
+            "Cases" = sum(new_cases, na.rm = TRUE),
             "Deaths" = sum(new_deaths, na.rm = TRUE)) %>%
   pivot_longer(cols = -quaters,
                names_to = "Variables",
                values_to = "value")%>%
-  pivot_wider(names_from = Variables,
-              values_from = value) %>%
-  rename(Quaters = quaters)
+  pivot_wider(names_from = quaters,
+              values_from = value)  %>%
+    mutate_each(funs(prettyNum(., big.mark=",")))%>%
+     formattable(list(area(col = 6) ~ color_tile("#CD5C5C", "#3CB371")))
 
-
-tab1 %>% 
-  select(Quaters, Tests, 'Positive Cases', Deaths) %>% 
-  as.data.frame() %>%  
-  formattable(list(area(col = 4) ~ color_tile( "#3CB371", "#CD5C5C"))) #Higher value and Lower value
-
+   
 ```
 <p>
-  explain 1st table
+From the above table, we can see Peru had an alarming rate of positive cases and deaths for the first three months of 2021. Though the positive cases were similar to that of 2020.3, the deaths with more than 50 thousand in the number set the highest record. Surprisingly, the fourth quarter which generally comprises holidays and gatherings has the second least number of cases and deaths.
 </p>
 
 
-<h2> Vaccination Rate </h2>
+<h2> Vaccinations in Peru </h2>
 
+<p>
+The vaccinations in Peru started during the first week of February in 2021. The below table shows the vaccination drive pulled by Peru each month.
+</p>
 ```{r}
 
-tab2 <- peru %>%
+tab1 <- peru %>%
   group_by(month) %>% filter(year == 2021) %>%
   mutate(month = month(date, label = TRUE)) %>%
   summarise("Vaccination" = sum(new_vaccinations, na.rm = TRUE),
-            "Timeline" = spk_chr(new_vaccinations, type ="line"),
-            "Partially Vaccinated" = sum(people_vaccinated, na.rm = TRUE),
-            "Fully Vaccinated" = sum(people_fully_vaccinated, na.rm = TRUE),
-            "Distribution" = spk_chr(people_fully_vaccinated, type ="box"))%>%
+            "Timeline" = spk_chr(new_vaccinations, type ="line"),,
+            "Distribution" = spk_chr(new_vaccinations, type ="box"))%>%
   rename(Month = month)
 
 
-tab2 %>% datatable(escape = FALSE, 
-                  caption = htmltools::tags$caption( style = 'caption-side: top; 
-                                                              text-align: center;  
-                                                              color: black; 
-                                                              font-size: 120% ;',
-                                                              'Vaccination Rate 2021'),
-                  options = c (list(pageLength = 10 ))) %>%
-  spk_add_deps()
+tab1 %>% datatable(escape = FALSE, 
+                  caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;  
+                                                              color: black; font-family: Arial; 
+                                                              font-size: 150% ;', 'Vaccination 2021')) %>%
+  spk_add_deps()%>%
+  formatRound('Vaccination', digits = 0)
 
 
 ```
 
 <p>
-  explain 2nd table
+From the table above, we can see the people hesitated initially to take the vaccination. There are four peaks in the timeline suggesting that people preferred to take vaccinations during the weekends. From the boxplot, we can see that there was a sudden fall in the vaccination number. The data for September is still to be recorded.
 </p>
 
 
@@ -164,13 +179,13 @@ plot<- peru %>%
             "Vaccination" = sum(new_vaccinations, na.rm = TRUE)) %>%
   pivot_longer(cols = -quaters,
                names_to = "Variables",
-               values_to = "value")
+               values_to = "value")  %>%
 
-  ggplot(plot, aes(quaters, value, colour= Variables))+
+  ggplot(aes(quaters, value, colour= Variables))+
   geom_line(size = 1.2)+ 
   scale_x_continuous(breaks = seq(2020.1, 2021.3, by= .01))+
   xlim(2020.1, 2021.4)+ 
-  labs(x= "20-Q1 to 21-Q3",y= "Value", 
+  labs(x= "Q1-20 to Q3-21",y= "Value", 
        title = "Timeline of coronavirus impact on Peru")+
   geom_text(aes(x = 2021.19, y = 10.5e+06, label = "Vaccination", color = "Vaccination"))+
   geom_text(aes(x = 2021.34, y = 0.7e+06, label = "Tests", color = "Tests"))+
@@ -178,10 +193,69 @@ plot<- peru %>%
   geom_text(aes(x = 2021.35, y = -0.4e+06, label = "Deaths", color = "Deaths"))+
   theme(legend.position = "none")
 
+ggplotly(plot)
+
 
 ```
 <p>
-  conclusion over here
+
+The above graph shows how a decent vaccination rate in Peru has improved to drag down the number of positive coronavirus cases and casualties. However, the testing drives in the country have slowed a bit in the third quarter of 2021. 
+According to a [CVID-19 tracker](https://graphics.reuters.com/world-coronavirus-tracker-and-maps/vaccination-rollout-and-access/), with the help of vaccinations, Covid-19 infections in Peru are decreasing. With more than 18M doses of Covid-19, approx 31.9% of the population has received one dose, and 25% of the countries’ population is fully vaccinated. 
+
 </p>
 
 
+<h2> References </h2>
+
+- R libraries:
+
+Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for
+  Visualization. R package version 1.1.1.
+  https://CRAN.R-project.org/package=scales
+
+Jeffrey A. Ryan and Joshua M. Ulrich (2020). quantmod: Quantitative
+  Financial Modelling Framework. R package version 0.4.18.
+  https://CRAN.R-project.org/package=quantmod
+  
+  C. Sievert. Interactive Web-Based Data Visualization with R, plotly,
+  and shiny. Chapman and Hall/CRC Florida, 20
+
+Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy
+  with lubridate. Journal of Statistical Software, 40(3), 1-25. URL
+  https://www.jstatsoft.org/v40/i03/.
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
+  Springer-Verlag New York, 2016.
+
+
+Hadley Wickham and Jim Hester (2021). readr: Read Rectangular Text
+  Data. R package version 2.0.0.
+  https://CRAN.R-project.org/package=readr
+
+Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for
+  Visualization. R package version 1.1.1.
+  https://CRAN.R-project.org/package=scales
+
+JJ Allaire, Rich Iannone, Alison Presmanes Hill and Yihui Xie (2021).
+  distill: 'R Markdown' Format for Scientific and Technical Writing. R
+  package version 1.2. https://CRAN.R-project.org/package=distill
+
+Kun Ren and Kenton Russell (2021). formattable: Create 'Formattable'
+  Data Structures. R package version 0.2.1.
+  https://CRAN.R-project.org/package=formattable
+
+Ramnath Vaidyanathan, Kent Russell and Gareth Watts (2016).
+  sparkline: 'jQuery' Sparkline 'htmlwidget'. R package version 2.0.
+  https://CRAN.R-project.org/package=sparkline
+
+Yihui Xie, Joe Cheng and Xianying Tan (2021). DT: A Wrapper of the
+  JavaScript Library 'DataTables'. R package version 0.18.
+  https://CRAN.R-project.org/package=DT
+  
+- Websites:
+
+Reuters. 2021. COVID-19 vaccine rollout: charts, maps and eligibility by country. [online] Available at: <https://graphics.reuters.com/world-coronavirus-tracker-and-maps/vaccination-rollout-and-access/> [Accessed 3 September 2021].
+
+Ritchie, H., Mathieu, E., Rodés-Guirao, L., Appel, C., Giattino, C., Ortiz-Ospina, E., Hasell, J., Macdonald, B., Beltekian, D. and Roser, M., 2021. Coronavirus Pandemic (COVID-19). [online] Our World in Data. Available at: <https://ourworldindata.org/coronavirus/country/peru> [Accessed 3 September 2021].
+
+BBC News. 2021. Covid: Why has Peru been so badly hit?. [online] Available at: <https://www.bbc.com/news/world-latin-america-53150808> [Accessed 3 September 2021].
