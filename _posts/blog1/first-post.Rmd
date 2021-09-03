@@ -25,6 +25,7 @@ library(sparkline)
 library(DT)
 library(formattable)
 library(scales)
+library(quantmod)
 
 data <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv') %>% 
                filter(location == "Peru")
@@ -40,42 +41,60 @@ peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, ne
 ```
 
 ![ ](pics/peru.png)
+<p style = "font-family: verdana;font-size: 8pt;"> source: pinterest.com </p>
 
-<html>
-<head>
+
+
 <style>
+body {
+  background-color: off white;
+}
 
 h2 {
-  color: black;
-  padding: 15px;
+  color: Dark Grey;
+  padding: 16px;
+}
+
+h3 {
+  color: grey;
+  padding: 10px;
 }
 
 
 p {
-  font-family: verdana;
+  font-family: Arial;
+  font-size: 11pt;
 }
 
 </style>
-</head>
-<body>
 
 
-<h2>Introduction</h2>
-<p> Into here </p>
 
-<h3>Data Description</h3>
-<p> DD here </p>
+<h2 > Introduction </h2> 
 
-<h3>Data Story</h3>
-<p> DS here </p>
-
-</body>
-</html>
+<p>    
+  intro
+</p>
 
 
-## Economic-Pandemic
+<h3> Data Description </h3> 
+
+<p>    
+  description
+</p>
+
+
+
+<h3> Data Story </h3>
+
+<p>    
+  story
+</p> 
+
+
+<h2> Economic-Pandemic </h2>
 ```{r}
-tab1<-  peru %>%
+tab1 <-  peru %>%
   mutate(quaters = quarter(date, with_year = TRUE)) %>% 
   group_by(quaters) %>%
   summarise("Tests" = sum(new_tests, na.rm = TRUE),
@@ -88,20 +107,23 @@ tab1<-  peru %>%
               values_from = value) %>%
   rename(Quaters = quaters)
 
-   tab1 %>% 
+
+tab1 %>% 
   select(Quaters, Tests, 'Positive Cases', Deaths) %>% 
   as.data.frame() %>%  
   formattable(list(area(col = 4) ~ color_tile( "#3CB371", "#CD5C5C"))) #Higher value and Lower value
 
 ```
-explain 1st table
+<p>
+  explain 1st table
+</p>
 
 
-## Vaccination Impacts
+<h2> Vaccination Rate </h2>
 
 ```{r}
 
-peru %>%
+tab2 <- peru %>%
   group_by(month) %>% filter(year == 2021) %>%
   mutate(month = month(date, label = TRUE)) %>%
   summarise("Vaccination" = sum(new_vaccinations, na.rm = TRUE),
@@ -109,15 +131,57 @@ peru %>%
             "Partially Vaccinated" = sum(people_vaccinated, na.rm = TRUE),
             "Fully Vaccinated" = sum(people_fully_vaccinated, na.rm = TRUE),
             "Distribution" = spk_chr(people_fully_vaccinated, type ="box"))%>%
-  rename(Month = month)%>%
-  datatable(escape = FALSE, 
-            ,caption = htmltools::tags$caption( style = 'caption-side: top; 
-                                                text-align: center;  color:black; font-size:120% ;',
-                                                'Vaccination Rate 2021'),
-            options = c (list(pageLength = 10 ))) %>%
+  rename(Month = month)
+
+
+tab2 %>% datatable(escape = FALSE, 
+                  caption = htmltools::tags$caption( style = 'caption-side: top; 
+                                                              text-align: center;  
+                                                              color: black; 
+                                                              font-size: 120% ;',
+                                                              'Vaccination Rate 2021'),
+                  options = c (list(pageLength = 10 ))) %>%
   spk_add_deps()
 
 
 ```
 
-explain 2nd table
+<p>
+  explain 2nd table
+</p>
+
+
+
+<h2> Conclusion </h2>
+
+```{r}
+plot<- peru %>%
+  mutate(quaters = quarter(date, with_year = TRUE)) %>% 
+  group_by(quaters) %>%
+  summarise("Tests" = sum(new_tests, na.rm = TRUE),
+            "Cases" = sum(new_cases, na.rm = TRUE),
+            "Deaths" = sum(new_deaths, na.rm = TRUE),
+            "Vaccination" = sum(new_vaccinations, na.rm = TRUE)) %>%
+  pivot_longer(cols = -quaters,
+               names_to = "Variables",
+               values_to = "value")
+
+  ggplot(plot, aes(quaters, value, colour= Variables))+
+  geom_line(size = 1.2)+ 
+  scale_x_continuous(breaks = seq(2020.1, 2021.3, by= .01))+
+  xlim(2020.1, 2021.4)+ 
+  labs(x= "20-Q1 to 21-Q3",y= "Value", 
+       title = "Timeline of coronavirus impact on Peru")+
+  geom_text(aes(x = 2021.19, y = 10.5e+06, label = "Vaccination", color = "Vaccination"))+
+  geom_text(aes(x = 2021.34, y = 0.7e+06, label = "Tests", color = "Tests"))+
+  geom_text(aes(x = 2021.36, y = 0.1e+06, label = "Cases", color = "Cases"))+
+  geom_text(aes(x = 2021.35, y = -0.4e+06, label = "Deaths", color = "Deaths"))+
+  theme(legend.position = "none")
+
+
+```
+<p>
+  conclusion over here
+</p>
+
+

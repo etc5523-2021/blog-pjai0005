@@ -1,5 +1,6 @@
 ---
 title: "About me"
+site: distill::distill_website
 ---
 
 ```{r setup, include=FALSE}
