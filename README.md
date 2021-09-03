@@ -10,7 +10,7 @@ This assessment is due Fri Sep 3 2021 11.55PM AEST.
 
 My selected country is [Peru].
 
-The relevant blog post for this assessment is in [https://pjai0005-blog1.netlify.app/posts/blog1/].html
+The relevant blog post for this assessment is in [https://pjai0005-blog1.netlify.app/posts/blog1/]
 
 - [ ] Selected a country
 - [ ] Website with R markdown 
