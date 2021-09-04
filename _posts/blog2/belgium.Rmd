@@ -1,0 +1,97 @@
+---
+title: "Belgium"
+description: |
+  Will release on the Friday of Sep 17 2021 11.55PM AEST.
+date: "`r Sys.Date()`"
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+```
+
+```{r libraries}
+# remotes::install_github('htmlwidgets/sparkline')
+
+library(distill)
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(lubridate)
+library(sparkline)
+library(DT)
+library(formattable)
+library(scales)
+library(quantmod)
+
+data <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv') %>% 
+               filter(location == "Belgium")
+```
+
+```{r, echo = F, out.width = '50%'}
+knitr::include_graphics("pics/belgium.jpg")
+```
+<style>
+body {
+  background-color: off white;
+}
+</style>
+<p style = "font-family: verdana;font-size: 8pt;"> source: VectorStock.com </p>
+```{r, echo=FALSE}
+# <h2> References </h2>
+#   
+# - Websites:
+#   
+#   Ritchie, H., Mathieu, E., Rodés-Guirao, L., Appel, C., Giattino, C., Ortiz-Ospina, E., Hasell, J., Macdonald, B., Beltekian, D. and Roser, M., 2021. Coronavirus Pandemic (COVID-19). [online] Our World in Data. Available at: <https://ourworldindata.org/coronavirus/country/peru> [Accessed 3 September 2021].
+# 
+# - R libraries:
+# 
+# Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for
+#   Visualization. R package version 1.1.1.
+#   https://CRAN.R-project.org/package=scales
+# 
+# Jeffrey A. Ryan and Joshua M. Ulrich (2020). quantmod: Quantitative
+#   Financial Modelling Framework. R package version 0.4.18.
+#   https://CRAN.R-project.org/package=quantmod
+#   
+#   C. Sievert. Interactive Web-Based Data Visualization with R, plotly,
+#   and shiny. Chapman and Hall/CRC Florida, 20
+# 
+# Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy
+#   with lubridate. Journal of Statistical Software, 40(3), 1-25. URL
+#   https://www.jstatsoft.org/v40/i03/.
+# 
+# H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
+#   Springer-Verlag New York, 2016.
+# 
+# 
+# Hadley Wickham and Jim Hester (2021). readr: Read Rectangular Text
+#   Data. R package version 2.0.0.
+#   https://CRAN.R-project.org/package=readr
+# 
+# Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for
+#   Visualization. R package version 1.1.1.
+#   https://CRAN.R-project.org/package=scales
+# 
+# JJ Allaire, Rich Iannone, Alison Presmanes Hill and Yihui Xie (2021).
+#   distill: 'R Markdown' Format for Scientific and Technical Writing. R
+#   package version 1.2. https://CRAN.R-project.org/package=distill
+# 
+# Kun Ren and Kenton Russell (2021). formattable: Create 'Formattable'
+#   Data Structures. R package version 0.2.1.
+#   https://CRAN.R-project.org/package=formattable
+# 
+# Ramnath Vaidyanathan, Kent Russell and Gareth Watts (2016).
+#   sparkline: 'jQuery' Sparkline 'htmlwidget'. R package version 2.0.
+#   https://CRAN.R-project.org/package=sparkline
+# 
+# Yihui Xie, Joe Cheng and Xianying Tan (2021). DT: A Wrapper of the
+#   JavaScript Library 'DataTables'. R package version 0.18.
+#   https://CRAN.R-project.org/package=DT
+  
+```
+

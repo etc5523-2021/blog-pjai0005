@@ -42,7 +42,12 @@ peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, ne
 ```
 
 
-![ ](pics/peru.png)
+```{r, echo = F, out.width = '50%'}
+knitr::include_graphics("pics/peru.png")
+```
+
+
+
 <p style = "font-family: verdana;font-size: 8pt;"> source: pinterest.com </p>
 
 
