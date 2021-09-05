@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(distill)
 library(readr)
 library(tidyverse)
+library(kableExtra)
 library(ggplot2)
 library(plotly)
 library(lubridate)
@@ -33,8 +34,7 @@ data <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/ma
 ```
 
 ```{r}
-peru <- data %>% select(location, date, new_cases, positive_rate, new_deaths, new_tests,
-                        new_vaccinations, people_vaccinated, people_fully_vaccinated) %>%
+peru <- data %>% select(location, date, new_cases, new_deaths, new_tests, new_vaccinations) %>%
   mutate(date = ymd(date),
          day = day(date),
          month = month(date),
@@ -59,7 +59,7 @@ body {
 
 h2 {
   color: Dark Grey;
-  padding: 16px;
+  padding: 15px;
 }
 
 h3 {
@@ -92,6 +92,47 @@ The avalanching situation in the country abducted many lives and lead to several
 </p> 
 
 
+<h3> Data Structure </h>
+<p>
+```{r}
+
+data_structure <- tibble(Variables = c("location",
+                                       "date",
+                                       "new_cases",
+                                       "new_deaths",
+                                       "new_tests",
+                                       "new_vaccinations",
+                                       "day",
+                                       "month",
+                                       "year"),
+                         
+                         Class = c("character",
+                                   "date",
+                                   "double",
+                                   "double",
+                                   "double",
+                                   "double",
+                                   "integer",
+                                   "double",
+                                   "double"),
+       
+       
+                         Description = c("country name",
+                                         "date from Jan-2020",
+                                         "covid cases per day",
+                                         "covid deaths per day",
+                                         "covid tests per day",
+                                         "vaccinations per day",
+                                         "day extracted from given date",
+                                         "month extracted from given date",
+                                         "year extracted from given date"))
+
+ datatable(head(data_structure), class = 'cell-border stripe')
+   
+```
+
+</p>
+
 
 <h3> Data Description </h3> 
 
@@ -113,7 +154,7 @@ Some parts of the analysis use terms like quarters for time periods which are us
 
 
 
-<h2> The Predicament Pandemic </h2>
+<h2> The Pandemic </h2>
 
 <p>
 COVID-19 has contributed an enormous amount of disruption to the global financial status. It has ruptured countries with the most stable economies to countries with developing economies like Peru. The below table breakdowns the country’s financial situation over the quarters. 
@@ -175,36 +216,30 @@ From the table above, we can see the people hesitated initially to take the vacc
 <h2> Conclusion </h2>
 
 ```{r}
-plot<- peru %>%
-  mutate(quaters = quarter(date, with_year = TRUE)) %>% 
-  group_by(quaters) %>%
+plot <- peru %>% 
+  group_by(year, month) %>% 
   summarise("Tests" = sum(new_tests, na.rm = TRUE),
             "Cases" = sum(new_cases, na.rm = TRUE),
             "Deaths" = sum(new_deaths, na.rm = TRUE),
             "Vaccination" = sum(new_vaccinations, na.rm = TRUE)) %>%
-  pivot_longer(cols = -quaters,
+  pivot_longer(cols = c(-year, -month),
                names_to = "Variables",
                values_to = "value")  %>%
-
-  ggplot(aes(quaters, value, colour= Variables))+
-  geom_line(size = 1.2)+ 
-  scale_x_continuous(breaks = seq(2020.1, 2021.3, by= .01))+
-  xlim(2020.1, 2021.4)+ 
-  labs(x= "Q1-20 to Q3-21",y= "Value", 
-       title = "Timeline of coronavirus impact on Peru")+
-  geom_text(aes(x = 2021.19, y = 10.5e+06, label = "Vaccination", color = "Vaccination"))+
-  geom_text(aes(x = 2021.34, y = 0.7e+06, label = "Tests", color = "Tests"))+
-  geom_text(aes(x = 2021.36, y = 0.1e+06, label = "Cases", color = "Cases"))+
-  geom_text(aes(x = 2021.35, y = -0.4e+06, label = "Deaths", color = "Deaths"))+
-  theme(legend.position = "none")
-
+  
+  ggplot(aes(month, (value/1000000), colour= Variables))+
+  geom_line(size = 0.5)+
+  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  scale_y_continuous(breaks = seq(0, 6, by = 1))+
+  labs(x= "Months ",y= "Value in Millions", 
+       title = "Comparision")+
+  facet_wrap(~year)
+  
 ggplotly(plot)
-
-
 ```
+
 <p>
 
-The above graph shows how a decent vaccination rate in Peru has improved to drag down the number of positive coronavirus cases and casualties. However, the testing drives in the country have slowed a bit in the third quarter of 2021. 
+The above graph shows how a decent vaccination rate in Peru has improved to drag down the number of positive coronavirus cases and casualties. Surprisingly, the vaccination rate dropped during august of 2021. However, the testing drives in the country have slowed a bit compared to 2020 where the people were not vaccinated. 
 According to a [CVID-19 tracker](https://graphics.reuters.com/world-coronavirus-tracker-and-maps/vaccination-rollout-and-access/), with the help of vaccinations, Covid-19 infections in Peru are decreasing. With more than 18M doses of Covid-19, approx 31.9% of the population has received one dose, and 25% of the countries’ population is fully vaccinated. 
 
 </p>

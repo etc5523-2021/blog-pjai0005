@@ -5,7 +5,6 @@ site: distill::distill_website
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-library(flexdashboard)
 ```
 
 ```{r, echo = F, out.width = '70%', fig.align='center'}
@@ -22,7 +21,7 @@ body {
 
 ## I am Prachi, a student at Monash University. 
 
-I am currently pursuing a Master's degree in Business Analytics (2021 to 2023), and I have graduated in Engineering of Information Technology from India. I am very much excited to share my thoughts and ideas with you all with the help of blogs. I hope you find my blogs interesting and informative.
+I am currently pursuing a Master's degree in Business Analytics (2021 to 2023), and I have graduated in Engineering of Information Technology from India. I am very much excited to share my thoughts and ideas with you all. I hope you find my blogs interesting and informative.
 
 
-You can check out my [GitHub](https://github.com/pjai0005) page for more exciting analysis, and connect with me on [LinkedIn](https://www.linkedin.com/in/prachi-jaiswal-a07b66161/).
+You can check out my [GitHub](https://github.com/pjai0005) page for more exciting analysis, and you can also connect with me on [LinkedIn](https://www.linkedin.com/in/prachi-jaiswal-a07b66161/).

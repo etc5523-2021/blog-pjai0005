@@ -35,12 +35,36 @@ data <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/ma
 ```{r, echo = F, out.width = '50%'}
 knitr::include_graphics("pics/belgium.jpg")
 ```
+
+<p style = "font-family: verdana;font-size: 8pt;"> source: VectorStock.com </p>
+
+
+
 <style>
 body {
   background-color: off white;
 }
+
+h2 {
+  color: Dark Grey;
+  padding: 15px;
+}
+
+h3 {
+  color: grey;
+  padding: 10px;
+}
+
+
+p {
+  font-family: Arial;
+  font-size: 11pt;
+}
+
 </style>
-<p style = "font-family: verdana;font-size: 8pt;"> source: VectorStock.com </p>
+
+
+
 ```{r, echo=FALSE}
 # <h2> References </h2>
 #   
