@@ -14,13 +14,13 @@
   {
     "path": "posts/blog2/",
     "title": "Belgium",
-    "description": "Will release on the Friday of Sep 17 2021 11.55PM AEST.",
+    "description": "It will release on the Friday of Sep 17 2021 11.55PM AEST.",
     "author": [],
-    "date": "2021-09-04",
+    "date": "2021-09-05",
     "categories": [],
     "contents": "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nbody {\r\n  background-color: off white;\r\n}\r\n\r\nsource: VectorStock.com\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
     "preview": "posts/blog2/pics/belgium.jpg",
-    "last_modified": "2021-09-04T18:13:05+05:45",
-    "input_file": {}
+    "last_modified": "2021-09-05T16:39:50+05:45",
+    "input_file": "belgium.knit.md"
   }
 ]
