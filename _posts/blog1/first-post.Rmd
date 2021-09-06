@@ -2,12 +2,13 @@
 title: "Peru"
 description: |
   COVID-19 crisis in Peru.
-date: "`r Sys.Date()`"
 output:
   distill::distill_article:
     self_contained: false
 ---
 
+<br><p style = "font-family: verdana;font-size: 8pt;"> Published on: `r Sys.Date()` </p>
+  
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
@@ -42,13 +43,15 @@ peru <- data %>% select(location, date, new_cases, new_deaths, new_tests, new_va
 ```
 
 
-```{r, echo = F, out.width = '50%'}
+```{r, echo = F, out.width = '50%', fig.align='center'}
 knitr::include_graphics("pics/peru.png")
 ```
 
 
 
-<p style = "font-family: verdana;font-size: 8pt;"> source: pinterest.com </p>
+<p style = "font-family: verdana;font-size: 8pt; text-align: center;"> 
+source: <a href="https://br.pinterest.com/pin/683280574707709186/"> pinterest.com </a> </p>
+
 
 
 
@@ -216,8 +219,30 @@ From the table above, we can see the people hesitated initially to take the vacc
 <h2> Conclusion </h2>
 
 ```{r}
-plot <- peru %>% 
-  group_by(year, month) %>% 
+plot1 <- peru %>% 
+  group_by(year, month) %>% filter(year == 2020) %>%
+  summarise("Tests" = sum(new_tests, na.rm = TRUE),
+            "Cases" = sum(new_cases, na.rm = TRUE),
+            "Deaths" = sum(new_deaths, na.rm = TRUE)) %>%
+  pivot_longer(cols = c(-year, -month),
+               names_to = "Variables",
+               values_to = "value")  %>%
+  
+  ggplot(aes(month, (value/1000000), colour= Variables))+
+  geom_line(size = 0.9)+
+  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  scale_y_continuous(breaks = seq(0, 3, by = 0.1))+
+  labs(x= "Months ",y= "Value in Millions", 
+       title = "Before Vaccination")+
+  scale_colour_manual(name = "Variables", values = c("blue", "orange", "red"),
+                      breaks = c("Tests", "Cases", "Deaths"),
+                      labels = c("Tests", "Cases", "Deaths"))+ 
+  theme(legend.key = element_rect(fill = "white", colour = "black"),
+        legend.text = element_text( c("Tests", "Cases", "Deaths")))
+  
+
+plot2 <- peru %>% 
+  group_by(year, month) %>% filter(year == 2021) %>%
   summarise("Tests" = sum(new_tests, na.rm = TRUE),
             "Cases" = sum(new_cases, na.rm = TRUE),
             "Deaths" = sum(new_deaths, na.rm = TRUE),
@@ -227,14 +252,31 @@ plot <- peru %>%
                values_to = "value")  %>%
   
   ggplot(aes(month, (value/1000000), colour= Variables))+
-  geom_line(size = 0.5)+
-  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  geom_line(size = 0.9)+
+    xlim(1, 8)+
+  scale_x_continuous(breaks = seq(1, 8, by = 1))+
   scale_y_continuous(breaks = seq(0, 6, by = 1))+
   labs(x= "Months ",y= "Value in Millions", 
-       title = "Comparision")+
-  facet_wrap(~year)
-  
-ggplotly(plot)
+       title = "After Vaccination")+
+  scale_colour_manual(name = "Variables", values = c("dark green", "blue", "orange", "red"),
+                      breaks = c("Vaccination", "Tests", "Cases", "Deaths"),
+                      labels = c("Vaccination", "Tests", "Cases", "Deaths"))+ 
+  theme(legend.key = element_rect(fill = "white", colour = "black"),
+        legend.text = element_text( c("Vaccination", "Tests", "Cases", "Deaths")))
+
+library(gridExtra)
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+mylegend<-g_legend(plot2)
+
+grid.arrange(arrangeGrob(plot1 + theme(legend.position="none"),
+                         plot2 + theme(legend.position="none"),
+                         nrow=1), mylegend, nrow=2, heights=c(2, 1))
+
 ```
 
 <p>

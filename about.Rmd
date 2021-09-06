@@ -25,3 +25,6 @@ I am currently pursuing a Master's degree in Business Analytics (2021 to 2023), 
 
 
 You can check out my [GitHub](https://github.com/pjai0005) page for more exciting analysis, and you can also connect with me on [LinkedIn](https://www.linkedin.com/in/prachi-jaiswal-a07b66161/).
+
+
+If you find anything inaccurate with my blog, report over [here](https://github.com/etc5523-2021/blog-pjai0005/issues). 
