@@ -1,5 +1,6 @@
 ---
 title: "Blogs"
+subtitle: "updated on"
 site: distill::distill_website
 listing: posts
 ---
@@ -8,21 +9,6 @@ listing: posts
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 ```
-
-<style>
-body {
-  background-color: off white;
-}
-
-h2 {
-  padding: 18px;
-}
-
-h3 {
-  color: grey;
-  padding: 10px;
-}
-</style>
 
 ## Welcome to InfoNest.
 

@@ -1,10 +1,18 @@
 name: "distill"
 title: "InfoNest"
 output_dir: "docs"
+base_url: https://pjai0005-blog1.netlify.app/posts/blog1/
 navbar:
   right:
     - text: "Home" 
       href: index.html
     - text: "About"
       href: about.html
+  source_url: https://github.com/etc5523-2021/blog-pjai0005
 output: distill::distill_article
+theme: theme.css
+collections:
+  posts:
+    disqus: Blog Updates on COVID-19
+    share: [twitter, facebook, linkedin]
+    citations: TRUE

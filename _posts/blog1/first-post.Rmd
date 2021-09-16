@@ -7,7 +7,8 @@ output:
     self_contained: false
 ---
 
-<br><p style = "font-family: verdana;font-size: 8pt;"> Published on: `r Sys.Date()` </p>
+<br><p style = "font-family: verdana;font-size: 8pt;"> Published on: 2021-09-03 </p>
+<br><p style = "font-family: verdana;font-size: 8pt;"> Updated on: `r Sys.Date()` </p>
   
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -51,33 +52,6 @@ knitr::include_graphics("pics/peru.png")
 
 <p style = "font-family: verdana;font-size: 8pt; text-align: center;"> 
 source: <a href="https://br.pinterest.com/pin/683280574707709186/"> pinterest.com </a> </p>
-
-
-
-
-<style>
-body {
-  background-color: off white;
-}
-
-h2 {
-  color: Dark Grey;
-  padding: 15px;
-}
-
-h3 {
-  color: grey;
-  padding: 10px;
-}
-
-
-p {
-  font-family: Arial;
-  font-size: 11pt;
-}
-
-</style>
-
 
 
 <h2 > Introduction </h2> 
@@ -149,7 +123,7 @@ Some parts of the analysis use terms like quarters for time periods which are us
   <li>Q1: Jan- Mar</li>
   <li>Q2: Apr-Jun</li>
   <li>Q3: Jul- Sep</li>
-  <li>Q4: Oct-Deck</li>
+  <li>Q4: Oct-Dec</li>
 </ul>
 
 </p>
@@ -282,7 +256,7 @@ grid.arrange(arrangeGrob(plot1 + theme(legend.position="none"),
 <p>
 
 The above graph shows how a decent vaccination rate in Peru has improved to drag down the number of positive coronavirus cases and casualties. Surprisingly, the vaccination rate dropped during august of 2021. However, the testing drives in the country have slowed a bit compared to 2020 where the people were not vaccinated. 
-According to a [CVID-19 tracker](https://graphics.reuters.com/world-coronavirus-tracker-and-maps/vaccination-rollout-and-access/), with the help of vaccinations, Covid-19 infections in Peru are decreasing. With more than 18M doses of Covid-19, approx 31.9% of the population has received one dose, and 25% of the countries’ population is fully vaccinated. 
+According to a [CVOID-19 tracker](https://graphics.reuters.com/world-coronavirus-tracker-and-maps/vaccination-rollout-and-access/), with the help of vaccinations, Covid-19 infections in Peru are decreasing. With more than 18M doses of Covid-19, approx 31.9% of the population has received one dose, and 25% of the countries’ population is fully vaccinated. 
 
 </p>
 
