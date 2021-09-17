@@ -2,7 +2,7 @@
 
 
 This is the blog of [Prachi Jaiswal].
-The URL of this blog is [https://pjai0005-blog1.netlify.app/].
+The URL of this blog is https://pjai0005-blog1.netlify.app/.
 
 ## Blog Post 1
 
@@ -10,7 +10,7 @@ This assessment is due Fri Sep 3 2021 11.55PM AEST.
 
 My selected country is [Peru].
 
-The relevant blog post for this assessment is in [https://pjai0005-blog1.netlify.app/posts/blog1/]
+The relevant blog post for this assessment is in https://pjai0005-blog1.netlify.app/posts/blog1/
 
 - [ ] Selected a country
 - [ ] Website with R markdown 
@@ -28,7 +28,7 @@ This assessment is due Fri Sep 17 2021 11.55PM AEST.
 
 My selected country is [FILL].
 
-The relevant blog post for this assessment is in [FILL].html
+The relevant blog post for this assessment is in https://pjai0005-blog1.netlify.app/posts/blog2/
 
 - [ ] Selected a new country
 - [ ] Data Story 1
