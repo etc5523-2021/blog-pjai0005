@@ -44,20 +44,19 @@ library(DT)
 
 ```{r, reading}
 
-cases <- read.csv(here::here("data/covid-tests-cases-deaths.csv")) %>%
-  select(Entity, Day, 
-         Total.confirmed.deaths.due.to.COVID.19,
-         Total.confirmed.cases.of.COVID.19) %>%
-  filter(Entity == "Azerbaijan")%>%
-  mutate(Day = ymd(Day),
-         day = day(Day),
-         month = month(Day),
-         year = year(Day)) %>%
-  rename(country= Entity, Date = "Day", 
-         cases= Total.confirmed.cases.of.COVID.19,
-         deaths= Total.confirmed.deaths.due.to.COVID.19)
 
+cases<- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv') %>% 
+               filter(location == "Azerbaijan")%>% 
   
+  select(location, date, new_cases, new_deaths, new_vaccinations) %>%
+  mutate(date = ymd(date),
+         day = day(date),
+         month = month(date),
+         year = year(date)) %>%
+  rename(country= location, Date = date, 
+         cases= new_cases, deaths= new_deaths, 
+         vaccine= new_vaccinations )
+
 gdp <- read.csv(here::here("data/gdp-growth.csv")) %>%
   select(RegionalMember, Year, GDP.growth) %>%
   filter(RegionalMember == "Azerbaijan") %>%
@@ -67,7 +66,7 @@ gdp <- read.csv(here::here("data/gdp-growth.csv")) %>%
 
 war <- read.csv(here::here("data/Caucasus_and_Central_Asia.csv"))%>%
   filter(country == "Azerbaijan", str_detect(notes, "Armenia|Artsakh")) %>% 
-  select(country, location, latitude, longitude, event_date, fatalities, notes) %>%
+  select(country, event_date, fatalities, notes) %>%
   mutate(event_date = as.Date(event_date, format = "%d %b %Y"),
          day = day(event_date),
          month = month(event_date), 
@@ -77,73 +76,56 @@ war <- read.csv(here::here("data/Caucasus_and_Central_Asia.csv"))%>%
   
 ```
 
+```{r, echo = F, out.width = '50%', fig.align='center'}
+knitr::include_graphics("pics/az.png")
 
-```{r, map}
-
-map_df <- map_data("world") %>% 
-  filter(region %in%  c("Azerbaijan", "Armenia")) %>%
-  rename(country = region) %>%
-  select(country, long, lat, group)
-
-centroid <- aggregate(cbind(long,lat) ~ country, data=map_df, FUN=mean)
-
-ggplotly (ggplot() +
-          geom_polygon(data = map_df, aes(long, lat, group = group, fill = country)) +
-          geom_text(data = centroid, mapping = aes(x=long, y=lat, label=country)) +
-          ggtitle(" War Tension") + 
-          geom_path(color = "white") +
-          scale_fill_hue(l=40) +
-          coord_equal() +
-          theme_bw() +
-          theme(legend.position = "none", 
-                  title = element_blank(),
-                  axis.ticks = element_blank(),
-                  axis.text = element_blank()))
-  
-  
 ```
 
-
-## Introduction 
+## 1. Introduction 
 
 <p>    
+The Nagorno-Karabakh war in 2020 was not the first war Armenia and Azerbaijan had in the past decades. It all started in the 1980s when the Nagorno-Karabakh region (which is legally enclaved of Azerbaijan) voted to become part of Armenia. It is because the Soviet Union saw increasing tensions in its constituent republics. 
+</p>
 
+<p>
+The majority of the population in Nagorno-Karabakh is Armenian and, the state is partially controlled by people separatists backed by the Armenian government.  
+Other caucasian countries are also involved in the conflict to an extent. Azerbaijan is supported by Turkey, while Russia is allied with both countries. 
+</p>
+
+<p>
+The article below shows how bad the situation was for Azerbaijan to deal with the War and COVID at the same time.
 </p>
 
 
 
-## Data Story 
-
-<p>    
-
-</p> 
-
-
-## Data Structure 
-<p> The data sets used for the analysis are given below: </p>
+## 2. Data Structure 
+<p> The data sets used for the analysis are given below. One of the data is directly loaded from a link. The source updates their data frequently, and therefore I can also keep my viewers up to date with the content.</p>
 
 ```{r, datasets}
 
 data1 <- tibble(Variables = c("country",
-                              "Day",
-                              "deaths",
+                              "Date",
                               "cases",
+                              "deaths",
+                              "vaccine",
                               "day",
                               "month",
                               "year"),
                          
                 Class = c("character",
                           "date",
-                          "integer",
-                          "integer",
+                          "double",
+                          "double",                          
+                          "double",
                           "integer",
                           "double",
                           "double"),
        
                Description = c("country name",
                                "date given in the initial data",
-                               "total number of deaths due to covid",
-                               "total number of cases of covid",
+                               "number of cases per day",
+                               "number of deaths per day",
+                               "number of vaccinations per day",
                                "day extracted from given date",
                                "month extracted from given date",
                                "year extracted from given date"))
@@ -164,10 +146,8 @@ data2 <- tibble(Variables = c("country",
 
 
  
-data3 <- tibble(Variables = c("location",
-                              "latitude",
-                              "longitude",
-                              "event_date",
+data3 <- tibble(Variables = c("country",
+                              "Date",
                               "fatalities",
                               "notes",
                               "day",
@@ -175,8 +155,6 @@ data3 <- tibble(Variables = c("location",
                               "year"),
                          
                 Class = c("character",
-                          "double",
-                          "double",
                           "date",
                           "integer",
                           "character",
@@ -184,9 +162,7 @@ data3 <- tibble(Variables = c("location",
                           "double",
                           "double"),
        
-               Description = c("locations affected in the country",
-                               "latitude of the location",
-                               "longitude of the location",
+               Description = c("country name",
                                "date given in the initial data",
                                "fatalities during the war in 2020",
                                "description of the incident which caused casualties",
@@ -197,11 +173,11 @@ data3 <- tibble(Variables = c("location",
 
 dt <- rbind.data.frame(data1, data2, data3)
 
-kbl(dt[1:19, 1:3], caption = "Daataset used for the Analysis") %>%
+kbl(dt[1:18, 1:3], caption = "Daataset used for the Analysis") %>%
   kable_paper("striped", full_width = F) %>%
-  pack_rows("Dataset 1", 1,7, label_row_css = "background-color: #666; color: #fff;") %>%
-  pack_rows("Dataset 2", 8,10, label_row_css = "background-color: #666; color: #fff;") %>%
-  pack_rows("Dataset 3", 11,19, label_row_css = "background-color: #666; color: #fff;")
+  pack_rows("Dataset 1", 1,8, label_row_css = "background-color: #00CED1; color: #fff;") %>%
+  pack_rows("Dataset 2", 9,11, label_row_css = "background-color: #DC143C; color: #fff;") %>%
+  pack_rows("Dataset 3", 12,18, label_row_css = "background-color: #3CB371; color: #fff;")
 
 
 ```
@@ -209,20 +185,20 @@ kbl(dt[1:19, 1:3], caption = "Daataset used for the Analysis") %>%
 <p style = "font-family: verdana;font-size: 8pt;">Sources:</p>
 
 <p style = "font-family: verdana;font-size: 8pt;"> 
-Dataset 1: <a href="https://ourworldindata.org/coronavirus/country/azerbaijan"> Our World in Data </a> </p>
-
-<p style = "font-family: verdana;font-size: 8pt;"> 
-Dataset 2: <a href="https://www.adb.org/countries/azerbaijan/economy"> Asian Development Bank </a> </p>
-
-<p style = "font-family: verdana;font-size: 8pt;"> 
+Dataset 1: <a href="https://ourworldindata.org/coronavirus/country/azerbaijan"> Our World in Data </a> </p> &nbsp; <p style = "font-family: verdana;font-size: 8pt;"> 
+Dataset 2: <a href="https://www.adb.org/countries/azerbaijan/economy"> Asian Development Bank </a> </p> &nbsp; <p style = "font-family: verdana;font-size: 8pt;"> 
 Dataset 3: <a href="https://acleddata.com/data-export-tool/"> ACLED </a> </p>
 
 
 
-## Analysis
+## 3. Analysis
 
-### COVID-19 in Azerbaijan 
+### 3.1 COVID-19 in Azerbaijan 
 
+<p> 
+The series graph shows the timeline of total positive cases and deaths due to coronavirus. The first case in Azerbaijan was recorded on the **1st of March 2020** with no casualty. And now, after 18 months the numbers have reached about **4M** positive cases and **5,000** deaths. With a total population of [10.2 M](https://www.worldometers.info/world-population/azerbaijan-population/) , 
+about **`r round(sum(cases$cases)/10000000 *100, digit = 2)`%** people are affected and **`r round(sum(cases$deaths, na.rm = TRUE)/10000000 *100, digit = 2)`%** of people died due to COVID-19 .
+</p>
 ```{r, series}
 
 #series for cases and deaths
@@ -230,7 +206,7 @@ plot1 <- cases  %>%
   select(Date, deaths, cases)
 
 corona = xts( x = plot1 [,-1], order.by= plot1$Date)
-dygraph(corona, main = "Deaths and Cases of COVID-19") %>%
+dygraph(corona, main = "Daily Deaths and Cases of COVID-19") %>%
   dyOptions( fillGraph=TRUE)%>%
   dyRangeSelector() %>%
   dyCrosshair(direction = "vertical") %>%
@@ -239,50 +215,56 @@ dygraph(corona, main = "Deaths and Cases of COVID-19") %>%
 
 
 ```
+
+From the above graph, we can understand that Azerbaijan is currently facing its fourth wave of coronavirus infections. However, the first and the third wave doesn't seem alarming to what the situation is now. During its first wave, the maximum record of people dying in a day was 15.
+
+The second wave might have happened because of two reasons. First is the holiday season where people may have connected with their friends and families and unknowingly spread the virus. The second reason can be the aftermath of the war.
+Furthermore, the fourth wave happens to be highly contagious with a record number of cases and deaths.
+
+
+<p> 
+The above graph breakdowns the monthly vaccination drive in Azerbaijan. The vaccination started in March of the year 2021. Although the data for September is still in progress, the inoculation process in the country seems to escalate gradually. The jump in vaccinations from March to April and May to June appears to be an optimistic projection. 
+</p>
 ```{r, lollipop}
 
 #Lollipop for cases and deaths
 options(scipen=200)
 
-plot2 <- cases %>%
+ggplotly(cases %>%
   mutate(month = as.factor(month),
          month = month(Date, label = TRUE))%>%
-  filter(year == 2020) %>%
+  filter(year == 2021) %>%
     group_by(month) %>%
-  summarise(Cases = sum(cases),
-            Deaths = sum(deaths)) %>%
-  rename(Month = month)
-  
-
-ggplotly(
-ggplot(plot2) +
+  summarise(Vaccination = sum(vaccine, na.rm = TRUE)) %>%
+  rename(Month = month) %>%
+ggplot() +
   geom_segment( aes(x=Month, xend=Month, 
-                    y=Deaths, yend=Cases), 
+                    y=Vaccination, yend=0), 
                 color="Black") +
   
-  geom_point( aes(x=Month, y=Deaths), 
-              color="#DC143C", size=4)+
-  geom_point( aes(x=Month, y=Cases), 
-              color="#dc6d02", size= 4) +
-  coord_flip()+
+  geom_point( aes(x=Month, y=Vaccination), 
+              color="#FF8C00", size=3)+
   theme_bw() +
   theme(legend.position="top",
           plot.title = element_text(size=16),
           axis.title.x = element_text(size=12))+
   scale_y_continuous(labels = comma) +
-  labs(x = "", y = "Number of Deaths in 2020",
-       title = "<span style = 'color:#DC143C'><b>Deaths</b></span> and <span style = 'color:#dc6d02'><b>Cases</b></span> due to COVID-19"))
+  labs(x = "", y = "Vaccination per month",
+       title = "<span style = 'color:#FF8C00'><b>Vaccinations</b></span> in Azerbaijan"))
 
 
 ```
 
 
+Azerbaijan is the first country in the Caucasus or Central Asia to get its people vaccinated. Countries like China and Russia helped Azerbaijan to procure a sufficient amount of vaccinations by the first quarter of 2021. 
+Furthermore, Azerbaijan also took part in an [experiment](https://www.reuters.com/article/health-coronavirus-vaccine-sputnik-astra/sputnik-astrazeneca-covid-19-vaccine-trials-to-start-in-azerbaijan-mideast-idUSKBN2A41BY), along with some USSR, and the Middle East countries. The experiment was getting vaccinated with the first dose of AstraZeneca and then a second dose of Russia’s Sputnik V vaccine.
 
 
 
-### Death Toll Comparison
+### 3.2 Death Toll Comparison
 
-
+<p> This Sankey graph below concisely explains the cause of deaths during the Nagorno-Karabakh war amid COVID-19. The 2020 war between Azerbaijan and Armenia began in the last week of September '2020, and it lasted for more than two months.  The violence and attacks came to an end in the first week of December, however, the conflict remains unsorted.
+</p>
 ```{r, sankey}
 # Sankey chart to compare deaths
 
@@ -315,14 +297,19 @@ p <- sankeyNetwork(Links = plot4, Nodes = node, Source = "IDmonth",
                Target = "IDtarget", Value = "value", NodeID = "name", fontSize = 14, 
                nodeWidth = 20, nodePadding = 15, sinksRight = FALSE)
 
-sankey <- htmlwidgets::prependContent(p, htmltools::tags$h4("Cause of Deaths in Each Month"))
+sankey <- htmlwidgets::prependContent(p, htmltools::tags$h4("Comparing Causes of Deaths in each Month"))
 
 #sankey <- htmlwidgets::appendContent(sankey, htmltools::tags$p("Comparing Death Toll"))
 
 sankey
 ```
+The graph shows September as the lowest death count month. It is because the data for COVID and War starts from the day the war began. Since we already know that the war started in the last weeks of September'20, therefore, the COVID-19 deaths data appears low.  The graph clearly shows that deaths due to COVID-19 are more in number than of deaths that occurred in the war.
 
 
+
+<p> 
+The below table displays the number of deaths each month for COVID-19 and War. It also illustrates the time series for both the causes each month. The table also outlines that the war came to an end in December '20 with a single fatality.
+</p>
 ```{r, tab}
 
 # Table to compare deaths
@@ -346,19 +333,23 @@ tab1 %>% datatable(escape = FALSE,, extensions = 'Buttons',
           class = 'cell-border stripe',
           caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;  
                                                       color: black; font-family: Arial; 
-                                                      font-size: 150% ;', 'Death Toll'))%>% 
+                                                      font-size: 150% ;', 'Death Toll during the War'))%>% 
   spk_add_deps()%>%
   formatRound('COVID-19', digits = 0)
 
-
-# Deaths due to war `r sum(new$fatalities)`
-# Deaths due to COVID `r sum(new$deaths)`
-
+tab1 <- tab1 %>% rename(Covid = `COVID-19`)
 ```
+It is clearly seen that the deaths caused by COVID-19 are way higher than those caused by the war. The highest number of deaths provoked by the war is 202 people. Whereas, the highest number of deaths caused by the pandemic is about five times more. Besides, the highest casualties in both categories happened in October '20 with 26 deaths more than the second-highest fatality month. 
+Conclusively, **`r round(sum(tab1$War)/ (sum(tab1$War) + sum(tab1$Covid))*100, digits = 2)`% ** fatalities were caused by the war and, **`r round(sum(tab1$Covid)/ (sum(tab1$War) + sum(tab1$Covid))*100, digits = 2)`%** due to COVID-19 during the **Nagorno-Karabakh war**.
 
 
-### Eonomic Impact
-```{r, bar}
+
+
+### 3.3 Eonomic Impact
+
+<p> According to [Georank](https://georank.org/economy/armenia/azerbaijan) , the economic growth amid COVID-19, Azerbaijan stands with a GDP of $46.9B ranked the 88th largest economy in the world. The below graph compares Azerbaijan's GDP from 2016. It also shows the predicted GDP rate for the coming years.
+</p>
+```{r, bar, out.width= "150%"}
 # bar graph for economy
 
 ggplotly(ggplot(gdp, aes(x= Year, y = gdp, fill = Year))+
@@ -369,38 +360,69 @@ ggplotly(ggplot(gdp, aes(x= Year, y = gdp, fill = Year))+
     scale_fill_manual(values = c("#CD5C5C","#3CB371","#228B22",
                                  "#006400", "#B22222","#228B22","#006400" ))+
     scale_y_continuous(breaks = seq(-4.5, 3, by = 1))+
-    theme_bw()+
+    theme_dark()+
     theme(legend.position = "none")+
     labs(y = "GDP in Percent",
          title = "Eonomic Impact over the years"))
 
 ```
 
-## Conclusion
-```{r, echo = F, out.width = '50%', fig.align='center'}
-knitr::include_graphics("pics/az.png")
 
+Azerbaijan saw a decrease in its GDP in the years when it underwent tensions and war with Armenia. However, in 2020 the country witnessed significantly low GDP. The reason for this certainly implies the destruction caused by the war and the pandemic.  Fortunately, the coming year's forecast shows potential betterment for the country's economy.
+
+
+## 4. Conclusion
+
+Azerbaijan has taken some measures to lessen the fourth wave of novel coronavirus by imposing [lockdowns](https://az.usembassy.gov/covid-19-information-for-azerbaijan/) in necessity. The vaccination rate in the country is quite good, as since the vaccination started, Azerbaijan hasn't seen any decline in its vaccination.
+It turns out that COVID is more fatal, as it causes 80 times higher casualties than caused by War amid Covid-19. 
+
+
+```{r, map}
+
+map_df <- map_data("world") %>% 
+  filter(region %in%  c("Azerbaijan", "Armenia")) %>%
+  rename(country = region) %>%
+  select(country, long, lat, group)
+
+centroid <- aggregate(cbind(long,lat) ~ country, data=map_df, FUN=mean)
+
+ggplotly (ggplot() +
+          geom_polygon(data = map_df, aes(long, lat, group = group, fill = country)) +
+          geom_text(data = centroid, mapping = aes(x=long, y=lat, label=country)) +
+          ggtitle(" War Tension") + 
+          geom_path(color = "white") +
+          scale_fill_hue(l=40) +
+          coord_equal() +
+          theme_bw() +
+          theme(legend.position = "none", 
+                  title = element_blank(),
+                  axis.ticks = element_blank(),
+                  axis.text = element_blank()))
+  
+  
 ```
 
 
-## References 
+Even with all the calamities caused by the recent War and the pandemic, Azerbaijan manages to restore the damage despite the higher population compared to Armenia. One of the reasons for a sudden rebound could be Azerbaijan's oil production. The crude oil prices were poorly impacted during the lockdowns due to COVID-19. However, at the end of 2020, crude oil prices began to increase as markets responded to news of several COVID-19 vaccine rollouts. 
 
-- Websites:
 
-  Ritchie, H. (2020, March 5). Belgium: Coronavirus Pandemic Country Profile. Our World in
-Data. https://ourworldindata.org/coronavirus/country/belgium
+
+
+
+## 5. References 
+
 
 - R libraries:
+
+Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software,
+  4(43), 1686, https://doi.org/10.21105/joss.01686
+
 
 Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for
   Visualization. R package version 1.1.1.
   https://CRAN.R-project.org/package=scales
 
-Jeffrey A. Ryan and Joshua M. Ulrich (2020). quantmod: Quantitative
-  Financial Modelling Framework. R package version 0.4.18.
-  https://CRAN.R-project.org/package=quantmod
-
-  C. Sievert. Interactive Web-Based Data Visualization with R, plotly,
+C. Sievert. Interactive Web-Based Data Visualization with R, plotly,
   and shiny. Chapman and Hall/CRC Florida, 20
 
 Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy
@@ -410,22 +432,15 @@ Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy
 H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
   Springer-Verlag New York, 2016.
 
-
 Hadley Wickham and Jim Hester (2021). readr: Read Rectangular Text
   Data. R package version 2.0.0.
   https://CRAN.R-project.org/package=readr
 
-Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for
-  Visualization. R package version 1.1.1.
-  https://CRAN.R-project.org/package=scales
 
 JJ Allaire, Rich Iannone, Alison Presmanes Hill and Yihui Xie (2021).
   distill: 'R Markdown' Format for Scientific and Technical Writing. R
   package version 1.2. https://CRAN.R-project.org/package=distill
 
-Kun Ren and Kenton Russell (2021). formattable: Create 'Formattable'
-  Data Structures. R package version 0.2.1.
-  https://CRAN.R-project.org/package=formattable
 
 Ramnath Vaidyanathan, Kent Russell and Gareth Watts (2016).
   sparkline: 'jQuery' Sparkline 'htmlwidget'. R package version 2.0.
@@ -435,8 +450,51 @@ Yihui Xie, Joe Cheng and Xianying Tan (2021). DT: A Wrapper of the
   JavaScript Library 'DataTables'. R package version 0.18.
   https://CRAN.R-project.org/package=DT
   
+Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software,
+  4(43), 1686, https://doi.org/10.21105/joss.01686
 
-
+Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2021). dplyr: A
+  Grammar of Data Manipulation. R package version 1.0.7.
+  https://CRAN.R-project.org/package=dplyr
+  
+Bob Rudis (2020). hrbrthemes: Additional Themes, Theme Components and Utilities
+  for 'ggplot2'. R package version 0.8.0.
+  https://CRAN.R-project.org/package=hrbrthemes 
+  
+Simon Garnier, Noam Ross, Robert Rudis, Antônio P. Camargo, Marco Sciaini, and
+  Cédric Scherer (2021). Rvision - Colorblind-Friendly Color Maps for R. R package
+  version 0.6.1.
+  
+Claus O. Wilke (2021). ggridges: Ridgeline Plots in 'ggplot2'. R package version
+  0.5.3. https://CRAN.R-project.org/package=ggridges
+  
+Antoine Fabri (2020). unglue: Extract Matched Substrings Using a Pattern. R
+  package version 0.1.0. https://CRAN.R-project.org/package=unglue
+  
+Elin Waring, Michael Quinn, Amelia McNamara, Eduardo Arino de la Rubia, Hao Zhu
+  and Shannon Ellis (2021). skimr: Compact and Flexible Summaries of Data. R package
+  version 2.1.3. https://CRAN.R-project.org/package=skimr
+  
+Dan Vanderkam, JJ Allaire, Jonathan Owen, Daniel Gromer and Benoit Thieurmel
+  (2018). dygraphs: Interface to 'Dygraphs' Interactive Time Series Charting
+  Library. R package version 1.1.1.6. https://CRAN.R-project.org/package=dygraphs
+  
+Jeffrey A. Ryan and Joshua M. Ulrich (2020). xts: eXtensible Time Series. R
+  package version 0.12.1. https://CRAN.R-project.org/package=xts
+  
+Hao Zhu (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax.
+  R package version 1.3.4. https://CRAN.R-project.org/package=kableExtra
+  
+oe Cheng, Carson Sievert, Barret Schloerke, Winston Chang, Yihui Xie and Jeff
+  Allen (2021). htmltools: Tools for HTML. R package version 0.5.2.
+  https://CRAN.R-project.org/package=htmltools
+  
+J.J. Allaire, Christopher Gandrud, Kenton Russell and CJ Yetman (2017). networkD3:
+  D3 JavaScript Network Graphs from R. R package version 0.4.
+  https://CRAN.R-project.org/package=networkD3
+  
+  
+  
 ```{r, eval = FALSE}
 # Ridges to compare deaths
 
