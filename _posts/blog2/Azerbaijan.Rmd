@@ -21,14 +21,10 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(distill)
 library(readr)
 library(tidyverse)
+library(dplyr)
 library(ggplot2)
 library(plotly)
-library(lubridate)
-library(sparkline)
-library(DT)
-library(formattable)
 library(scales)
-library(quantmod)
 library(skimr)
 library(unglue)
 library(hrbrthemes)
@@ -37,11 +33,16 @@ library(ggridges)
 library(dygraphs)
 library(xts) 
 library(kableExtra)
+library(lubridate)
+library(htmltools)
+library(networkD3)
+library(sparkline)
+library(DT)
 
 ```
 
 
-```{r, reading, eval=FALSE}
+```{r, reading}
 
 cases <- read.csv(here::here("data/covid-tests-cases-deaths.csv")) %>%
   select(Entity, Day, 
@@ -119,10 +120,9 @@ ggplotly (ggplot() +
 
 
 ## Data Structure 
-<p> I have used three datasets from different sources for the analysis.
+<p> The data sets used for the analysis are given below: </p>
 
-### Data 
-```{r}
+```{r, datasets}
 
 data1 <- tibble(Variables = c("country",
                               "Day",
@@ -140,7 +140,6 @@ data1 <- tibble(Variables = c("country",
                           "double",
                           "double"),
        
-       
                Description = c("country name",
                                "date given in the initial data",
                                "total number of deaths due to covid",
@@ -148,6 +147,7 @@ data1 <- tibble(Variables = c("country",
                                "day extracted from given date",
                                "month extracted from given date",
                                "year extracted from given date"))
+
 
 
 data2 <- tibble(Variables = c("country",
@@ -158,10 +158,10 @@ data2 <- tibble(Variables = c("country",
                           "character",
                           "double"),
        
-       
                Description = c("country name",
                                "year from 2016 to 2022 forecast",
                                "gdp of the country for each year"))
+
 
  
 data3 <- tibble(Variables = c("location",
@@ -184,7 +184,6 @@ data3 <- tibble(Variables = c("location",
                           "double",
                           "double"),
        
-       
                Description = c("locations affected in the country",
                                "latitude of the location",
                                "longitude of the location",
@@ -196,10 +195,6 @@ data3 <- tibble(Variables = c("location",
                                "year extracted from given date"))
 
 
-```
-
-```{r}
-
 dt <- rbind.data.frame(data1, data2, data3)
 
 kbl(dt[1:19, 1:3], caption = "Daataset used for the Analysis") %>%
@@ -208,7 +203,9 @@ kbl(dt[1:19, 1:3], caption = "Daataset used for the Analysis") %>%
   pack_rows("Dataset 2", 8,10, label_row_css = "background-color: #666; color: #fff;") %>%
   pack_rows("Dataset 3", 11,19, label_row_css = "background-color: #666; color: #fff;")
 
+
 ```
+
 <p style = "font-family: verdana;font-size: 8pt;">Sources:</p>
 
 <p style = "font-family: verdana;font-size: 8pt;"> 
@@ -222,81 +219,136 @@ Dataset 3: <a href="https://acleddata.com/data-export-tool/"> ACLED </a> </p>
 
 
 
+## Analysis
 
+### COVID-19 in Azerbaijan 
 
-## COVID-19 in Azerbaijan 
-
-```{r, eval = FALSE}
-#density for cases and deaths
-den <- cases %>%
-  group_by(month) %>%
-  summarise(cases = sum (cases)/1000000,
-            deaths = sum (deaths)/1000000)%>%
-  pivot_longer(cols = c(cases, deaths),
-               names_to = "variables",
-               values_to = "value")
-  
-ggplotly(ggplot( den, aes(x= value, group=variables, fill=variables)) +
-  geom_density(adjust=1.5, alpha=.3)+ 
-  theme_ipsum()+ 
-  scale_x_log10()+
-  labs(x= "Cumulative Cases and Deaths",
-       y= "Density",
-       title = "Covid-19 in Azerbaijan"))
-
-
-#Boxplot for cases and deaths
-cases %>% rename(case = cases) %>%
-  pivot_longer(cols = c(cases, deaths),
-               names_to = "variables",
-               values_to = "value") %>%
-  ggplot(aes(x=variables, y=value, fill=variables)) + 
-    geom_boxplot(adjust=1.5, alpha=.3)+ 
-  theme_ipsum()+ 
-    scale_y_log10()+
-  facet_wrap(~year)
-
+```{r, series}
 
 #series for cases and deaths
-
-plot1 <- cases %>%
+plot1 <- cases  %>%
   select(Date, deaths, cases)
 
 corona = xts( x = plot1 [,-1], order.by= plot1$Date)
-dygraph(corona) %>%
-dyOptions( fillGraph=TRUE)%>%
+dygraph(corona, main = "Deaths and Cases of COVID-19") %>%
+  dyOptions( fillGraph=TRUE)%>%
   dyRangeSelector() %>%
   dyCrosshair(direction = "vertical") %>%
   dyHighlight(highlightCircleSize = 5, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
   dyRoller(rollPeriod = 1)
+
+
+```
+```{r, lollipop}
+
+#Lollipop for cases and deaths
+options(scipen=200)
+
+plot2 <- cases %>%
+  mutate(month = as.factor(month),
+         month = month(Date, label = TRUE))%>%
+  filter(year == 2020) %>%
+    group_by(month) %>%
+  summarise(Cases = sum(cases),
+            Deaths = sum(deaths)) %>%
+  rename(Month = month)
+  
+
+ggplotly(
+ggplot(plot2) +
+  geom_segment( aes(x=Month, xend=Month, 
+                    y=Deaths, yend=Cases), 
+                color="Black") +
+  
+  geom_point( aes(x=Month, y=Deaths), 
+              color="#DC143C", size=4)+
+  geom_point( aes(x=Month, y=Cases), 
+              color="#dc6d02", size= 4) +
+  coord_flip()+
+  theme_bw() +
+  theme(legend.position="top",
+          plot.title = element_text(size=16),
+          axis.title.x = element_text(size=12))+
+  scale_y_continuous(labels = comma) +
+  labs(x = "", y = "Number of Deaths in 2020",
+       title = "<span style = 'color:#DC143C'><b>Deaths</b></span> and <span style = 'color:#dc6d02'><b>Cases</b></span> due to COVID-19"))
+
 
 ```
 
 
 
 
-## Death Toll Comparison
 
-```{r, eval = FALSE}
-new <- war %>%
+### Death Toll Comparison
+
+
+```{r, sankey}
+# Sankey chart to compare deaths
+
+plot4 <- war %>%
+    select(Date, fatalities) %>%
+    left_join(cases, by = "Date") %>%
+  mutate(month = as.factor(month),
+         month = month(Date, label = TRUE),
+         Total = fatalities+deaths)%>%
+  filter(year == 2020,
+         month %in% c("Sep", "Oct", "Nov")) %>%
+    rename("War" = "fatalities",
+         "COVID" = "deaths")%>%
+    group_by(month) %>%
+  summarise(War = sum(War),
+            COVID = sum(COVID))%>%
+  pivot_longer(cols = -month,
+               names_to = "target",
+               values_to = "value")
+
+node <- data.frame(name=c(as.character(plot4$month), 
+        as.character(plot4$target)) %>% unique())
+
+my_color <- 'd3.scaleOrdinal() .domain(["Sep", "Oct", "Nov", "Covid", "War"]) .range([ "#5f0f40", "#fb8b24","#0f4c5c", "#9a031e", "#e36414"])'
+
+plot4$IDmonth <- match(plot4$month, node$name)-1 
+plot4$IDtarget <- match(plot4$target, node$name)-1
+ 
+p <- sankeyNetwork(Links = plot4, Nodes = node, Source = "IDmonth", 
+               Target = "IDtarget", Value = "value", NodeID = "name", fontSize = 14, 
+               nodeWidth = 20, nodePadding = 15, sinksRight = FALSE)
+
+sankey <- htmlwidgets::prependContent(p, htmltools::tags$h4("Cause of Deaths in Each Month"))
+
+#sankey <- htmlwidgets::appendContent(sankey, htmltools::tags$p("Comparing Death Toll"))
+
+sankey
+```
+
+
+```{r, tab}
+
+# Table to compare deaths
+
+tab1<- war %>%
     select(Date, fatalities) %>%
     left_join(cases, by = "Date") %>%
   mutate(month = as.factor(month),
          month = month(Date, label = TRUE))%>%
-  filter(year == 2020,
-         month %in% c("Sep", "Oct", "Nov")) %>%
-  pivot_longer(cols = c(fatalities, deaths),
-               names_to = "type",
-               values_to = "demise") 
+  filter(year == 2020) %>%
+  group_by(month) %>%
+  summarise("War" = sum(fatalities, na.rm = TRUE),
+            "War<br>Timeline" = spk_chr(fatalities, type ="line"),
+            "COVID-19" = sum(deaths, na.rm = TRUE),
+            "COVID-19<br>Timeline" = spk_chr(deaths, type ="line"))%>%
+    rename(Month = month)
 
 
-ggplot(new,aes(x = demise, y = month ))+
-  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01)+
-  scale_fill_viridis() +
-  theme_ipsum() +
-  labs(x= "Deaths",
-       y= "Months",
-       title = "Total number of deaths")
+tab1 %>% datatable(escape = FALSE,, extensions = 'Buttons',
+          options = list(dom = 'Bfrtip',buttons = list(c('csv', 'excel', 'print'))) , 
+          class = 'cell-border stripe',
+          caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;  
+                                                      color: black; font-family: Arial; 
+                                                      font-size: 150% ;', 'Death Toll'))%>% 
+  spk_add_deps()%>%
+  formatRound('COVID-19', digits = 0)
 
 
 # Deaths due to war `r sum(new$fatalities)`
@@ -305,75 +357,18 @@ ggplot(new,aes(x = demise, y = month ))+
 ```
 
 
-
-```{r , eval = FALSE}
-
-#box plot
-war_deaths <- war %>%
-    select(Date, fatalities) %>%
-    left_join(cases, by = "Date") %>%
-  rename("War" = "fatalities",
-         "COVID" = "deaths") %>%
-  pivot_longer(cols = c(War, COVID),
-               names_to = "type",
-               values_to = "demise") 
-  
-ggplotly(ggplot(war_deaths, aes(x=type, y=demise, fill=type)) + 
-    geom_boxplot()+
-    scale_y_log10()+
-    stat_summary(fun.y=mean, geom="point", shape=20, 
-                 size=4, color="red", fill="red") +
-    coord_flip()+ 
-    theme_bw() +
-    theme(legend.position="none",
-          plot.title = element_text(size=16),
-          axis.title.x = element_text(size=12) ) +
-      
-    labs(x = "", y = "Number of people who died",
-         title = "Breakdown of Deaths"))
-
-
-
-```
-
-
-```{r, eval = FALSE}
-
-# Series for death comparison
-plot2 <- war %>%
-    select(Date, fatalities) %>%
-    left_join(cases, by = "Date") %>%
-    rename("War" = "fatalities",
-         "COVID" = "deaths")%>%
-  filter(year == 2020,
-         month %in% c(9, 10, 11))%>%
-    select(Date, War, COVID)
-  
-
-
-total = xts( x = plot2 [,-1], order.by= plot2$Date)
-dygraph(total) %>%
-dyOptions( fillGraph=TRUE)%>%
-  dyRangeSelector() %>%
-  dyCrosshair(direction = "vertical") %>%
-  dyHighlight(highlightCircleSize = 5, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
-  dyRoller(rollPeriod = 1)
-
-
-  
-```
-
-## Eonomic Impact
-```{r, eval = FALSE}
+### Eonomic Impact
+```{r, bar}
+# bar graph for economy
 
 ggplotly(ggplot(gdp, aes(x= Year, y = gdp, fill = Year))+
   geom_bar(stat="identity", position = "dodge") +
   geom_text(aes(label=sprintf("%1.1f%%", gdp)), 
             position = position_stack(vjust= 0.5),
             colour = "white", size = 3) +
-    scale_fill_manual(values = c("#CD5C5C","#32CD32","#228B22",
+    scale_fill_manual(values = c("#CD5C5C","#3CB371","#228B22",
                                  "#006400", "#B22222","#228B22","#006400" ))+
-    scale_y_continuous(breaks = seq(-4.5, 3, by = .5))+
+    scale_y_continuous(breaks = seq(-4.5, 3, by = 1))+
     theme_bw()+
     theme(legend.position = "none")+
     labs(y = "GDP in Percent",
@@ -441,4 +436,98 @@ Yihui Xie, Joe Cheng and Xianying Tan (2021). DT: A Wrapper of the
   https://CRAN.R-project.org/package=DT
   
 
+
+```{r, eval = FALSE}
+# Ridges to compare deaths
+
+# new <- war %>%
+#     select(Date, fatalities) %>%
+#     left_join(cases, by = "Date") %>%
+#   mutate(month = as.factor(month),
+#          month = month(Date, label = TRUE))%>%
+#   filter(year == 2020,
+#          month %in% c("Sep", "Oct", "Nov")) %>%
+#   pivot_longer(cols = c(fatalities, deaths),
+#                names_to = "type",
+#                values_to = "demise") 
+# 
+# 
+# ggplot(new,aes(x = demise, y = month))+
+#   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, fill = "#CD5C5C")+
+#   scale_fill_viridis() +
+#   theme_ipsum()+
+#     theme(legend.position="none",
+#           plot.title = element_text(size=16),
+#           axis.title.x = element_text(size=12),
+#           axis.title.y = element_text(size=12)) +
+#   labs(x= "Deaths",
+#        y= "Months",
+#        title = "Total number of deaths")
+
+
+
+# Series for death comparison
+# plot2 <- war %>%
+#     select(Date, fatalities) %>%
+#     left_join(cases, by = "Date") %>%
+#     rename("War" = "fatalities",
+#          "COVID" = "deaths")%>%
+#   filter(year == 2020,
+#          month %in% c(9, 10, 11))%>%
+#     select(Date, War, COVID)
+#   
+# 
+# 
+# total = xts( x = plot2 [,-1], order.by= plot2$Date)
+# dygraph(total) %>%
+# dyOptions( fillGraph=TRUE)%>%
+#   dyRangeSelector() %>%
+#   dyCrosshair(direction = "vertical") %>%
+#   dyHighlight(highlightCircleSize = 5, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
+#   dyRoller(rollPeriod = 1)
+# 
+
+
+#box plot
+# war_deaths <- war %>%
+#     select(Date, fatalities) %>%
+#     left_join(cases, by = "Date") %>%
+#   rename("War" = "fatalities",
+#          "COVID" = "deaths") %>%
+#   pivot_longer(cols = c(War, COVID),
+#                names_to = "type",
+#                values_to = "demise") 
+#   
+# ggplotly(ggplot(war_deaths, aes(x=type, y=demise, fill=type)) + 
+#     geom_boxplot(adjust=1.5, alpha=.3)+
+#     scale_y_log10()+
+#     stat_summary(fun.y=mean, geom="point", shape=20, 
+#                  size=4, color="red", fill="red") +
+#     coord_flip()+ 
+#     theme_bw() +
+#     theme(legend.position="none",
+#           plot.title = element_text(size=16),
+#           axis.title.x = element_text(size=12) ) +
+#       
+#     labs(x = "", y = "Number of people who died",
+#          title = "Deaths Caused by:"))
+
+
+#density for cases and deaths
+# den <- cases %>%
+#   group_by(month) %>%
+#   summarise(cases = sum (cases)/1000000,
+#             deaths = sum (deaths)/1000000)%>%
+#   pivot_longer(cols = c(cases, deaths),
+#                names_to = "variables",
+#                values_to = "value")
+# 
+# ggplotly(ggplot( den, aes(x= value, group=variables, fill=variables)) +
+#   geom_density(adjust=1.5, alpha=.3)+
+#   theme_ipsum()+
+#   scale_x_log10()+
+#   labs(x= "Cumulative Cases and Deaths",
+#        y= "Density",
+#        title = "Covid-19 in Azerbaijan"))
+```
 

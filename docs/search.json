@@ -5,14 +5,14 @@
       "title": "About me",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n\r\nbody {\r\n  background-color: off white;\r\n}\r\nHey there!\r\nI am Prachi, a student at Monash University.\r\nI am currently pursuing a Master’s degree in Business Analytics (2021 to 2023), and I have graduated in Engineering of Information Technology from India. I am very much excited to share my thoughts and ideas with you all. I hope you find my blogs interesting and informative.\r\nYou can check out my GitHub page for more exciting analysis. You can also connect with me on LinkedIn.\r\nIf you find anything inaccurate with my blog, kindly report over here.\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-09-16T18:10:37+05:45"
+      "last_modified": "2021-09-17T07:36:54+05:45"
     },
     {
       "path": "index.html",
       "title": "Blogs",
       "author": [],
       "contents": "\r\nWelcome to InfoNest.\r\nHi friends, I am Prachi.\r\nYou can find a variety of informative and fun articles listed in my blog. I am very much excited to share my thoughts and ideas with you all. I hope you guys find my blogs interesting and engaging. Stay tuned for more information on other topics.\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-09-16T18:10:39+05:45"
+      "last_modified": "2021-09-17T11:53:56+05:45"
     }
   ],
   "collections": ["posts/posts.json"]

@@ -59,24 +59,27 @@ d-appendix {
 /* These properties only apply to Distill sites and blogs  */
 
 .distill-site-header {
-  --title-size:       18px;
+  --title-size:       25px;
   --text-color:       rgba(255, 255, 255, 0.8);
-  --text-size:        15px;
-  --hover-color:      white;
-  --bkgd-color:       #0F2E3D;
+  --text-size:        20px;
+  --hover-color:      Grey;
+  --bkgd-color:       #2F4F4F;
 }
 
 
+}
 
 .distill-site-footer {
   --text-color:       rgba(255, 255, 255, 0.8);
-  --text-size:        15px;
-  --hover-color:      white;
-  --bkgd-color:       #0F2E3D;
+  --text-size:        12px;
+  --hover-color:      Grey;
+  --bkgd-color:       #2F4F4F;
 }
 
 /*-- Additional custom styles --*/
-/* Add any additional CSS rules below                      */
+/* Add any additional CSS rules below   
+*/
+
 
 body {
   background-color: off white;
@@ -98,26 +101,12 @@ body d-article p {
   font-size: 11pt;
 }
 
-.distill-site-header {
-  --title-size:       25px;
-  --text-color:       rgba(255, 255, 255, 0.8);
-  --text-size:        20px;
-  --hover-color:      Grey;
-  --bkgd-color:       #2F4F4F;
-}
 
-
-}
-
-.distill-site-footer {
-  --text-color:       rgba(255, 255, 255, 0.8);
-  --text-size:        12px;
-  --hover-color:      Grey;
-  --bkgd-color:       #2F4F4F;
-}
 
 h1, h2, h3, h4, h5, h6, .posts-list .post-preview h2, .posts-list .description h2 {
     font-family: 'Fira Mono', monospace;
 }
 
-
+.distill-site-nav.distill-site-footer{
+  background-color: #2F4F4F;
+}
